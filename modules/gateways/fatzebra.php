@@ -60,10 +60,10 @@ function fatzebra_capture($params) {
   $card_cvv = $params['cccvv'];
   $card_holder = $params['clientdetails']['firstname'] . " " . $params['clientdetails']['lastname'];
 
-  if (isset($_SERVER['REMOTE_ADDR'])) {
-    $customer_ip = $_SERVER['REMOTE_ADDR'];
-  } else {
-    $customer_ip = "127.0.0.1";
+  $customer_ip = $_SERVER['REMOTE_ADDR'];
+  if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+    $forwarded_ips = explode(', ', $_SERVER['HTTP_X_FORWARDED_FOR']);
+    $customer_ip = $forwarded_ips[0];
   }
 
   $payload = array(
@@ -171,7 +171,6 @@ function do_request($method, $uri, $payload = null, $params) {
 
   curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, true);
-  curl_setopt($curl, CURLOPT_SSLVERSION, 3);
   curl_setopt($curl, CURLOPT_CAINFO, dirname(__FILE__) . DIRECTORY_SEPARATOR . 'cacert.pem');
   curl_setopt($curl, CURLOPT_TIMEOUT, 40);
 
